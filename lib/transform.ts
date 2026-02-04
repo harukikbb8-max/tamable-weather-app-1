@@ -26,9 +26,11 @@ export function transformToChartData(
   const metric = METRICS.find((m) => m.id === metricId);
   if (!metric) return [];
 
-  /** 降水量は0未満にならないよう補正 */
-  const clampPrecipitation = (v: number | null | undefined): number | null =>
-    metric.label === "降水量" ? Math.max(0, v ?? 0) : (v ?? null);
+  /** 降水量は0未満にならないよう補正（API が string を返す場合も受け付ける） */
+  const clampPrecipitation = (v: number | string | null | undefined): number | null => {
+    const n = v == null ? null : typeof v === "number" ? v : Number(v);
+    return metric.label === "降水量" ? (n != null ? Math.max(0, n) : null) : n;
+  };
 
   if (period === "48h" && data.hourly) {
     const times = data.hourly.time ?? [];
