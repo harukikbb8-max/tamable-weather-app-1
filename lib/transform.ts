@@ -26,6 +26,10 @@ export function transformToChartData(
   const metric = METRICS.find((m) => m.id === metricId);
   if (!metric) return [];
 
+  /** 降水量は0未満にならないよう補正 */
+  const clampPrecipitation = (v: number | null | undefined): number | null =>
+    metric.label === "降水量" ? Math.max(0, v ?? 0) : (v ?? null);
+
   if (period === "48h" && data.hourly) {
     const times = data.hourly.time ?? [];
     const values = data.hourly[metric.hourly as keyof typeof data.hourly];
@@ -33,7 +37,7 @@ export function transformToChartData(
     return times.slice(0, 48).map((time, i) => ({
       time,
       label: formatTime(time, "48h"),
-      values: { [metric.label]: arr[i] ?? null },
+      values: { [metric.label]: clampPrecipitation(arr[i]) },
     })) as ChartDataPoint[];
   }
 
@@ -59,7 +63,7 @@ export function transformToChartData(
       return times.map((time, i) => ({
         time,
         label: formatTime(time, "7d"),
-        values: { [metric.label]: arr[i] ?? null },
+        values: { [metric.label]: clampPrecipitation(arr[i]) },
       })) as ChartDataPoint[];
     }
     // 体感温度: daily がないので hourly を 7 日分（日ごとに先頭のみ）。time は "YYYY-MM-DD" に統一し複数指標マージ時に気温と一致させる

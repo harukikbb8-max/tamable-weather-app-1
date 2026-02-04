@@ -107,7 +107,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
           className="chart-tooltip"
           style={{
             position: "absolute",
-            top: 8,
+            top: -4,
             left: cx,
             transform: "translate(-50%, 0)",
             minWidth: "200px",
@@ -272,11 +272,26 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             {seriesNames.map((name, i) => {
               const color = getSeriesColor(name, i);
               const gradientId = `area-grad-${i}`;
-              /** ドット：前の丸スタイル（48h はやや大きめ・白縁） */
-              const dotConfig =
-                period === "48h"
-                  ? { r: 4, fill: color, stroke: "#fff", strokeWidth: 2 }
-                  : { r: 3, fill: color, stroke: "#fff", strokeWidth: 1.5 };
+              const lineType = name === "降水量" ? "linear" : is48h ? "linear" : "natural";
+              const dotR = is48h ? 4 : 3;
+              const activeR = is48h ? 5 : 4;
+              const strokeW = is48h ? 2 : 1.5;
+              /** ドット・activeDot をすべて丸で統一（Recharts の既定形状に依存しない） */
+              const renderCircleDot =
+                (r: number) =>
+                (props: { cx?: number; cy?: number }) => {
+                  const { cx = 0, cy = 0 } = props;
+                  return (
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={r}
+                      fill={color}
+                      stroke="#fff"
+                      strokeWidth={strokeW}
+                    />
+                  );
+                };
               return (
                 <React.Fragment key={name}>
                   {!is48h && (
@@ -292,19 +307,14 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                     />
                   )}
                   <Line
-                    type={is48h ? "linear" : "natural"}
+                    type={lineType}
                     dataKey={name}
                     name={name}
                     stroke={color}
                     strokeWidth={is48h ? 1.2 : 2.2}
                     strokeDasharray={is48h ? "4 4" : undefined}
-                    dot={dotConfig}
-                    activeDot={{
-                      r: is48h ? 5 : 4,
-                      fill: color,
-                      stroke: "#fff",
-                      strokeWidth: 2,
-                    }}
+                    dot={renderCircleDot(dotR)}
+                    activeDot={renderCircleDot(activeR)}
                     connectNulls
                     isAnimationActive={false}
                   />
