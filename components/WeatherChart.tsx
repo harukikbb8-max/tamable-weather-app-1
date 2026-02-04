@@ -90,7 +90,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   const singleUnit = seriesNames.length === 1 ? getUnit(seriesNames[0]) : null;
 
-  /** ツールチップ：大きく・上部固定でカーソルと被らない */
+  /** ツールチップ：大きく・常に上部固定で見切れない・カーソルと被らない */
   const renderTooltip = useCallback(
     (props: unknown) => {
       const { active, payload, label } = (props as { active?: boolean; payload?: readonly { name?: string; value?: number; color?: string }[]; label?: string });
@@ -99,12 +99,11 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
         <div
           className="chart-tooltip"
           style={{
-            position: "absolute",
-            top: 12,
-            left: "50%",
-            transform: "translateX(-50%)",
+            position: "relative",
+            top: 0,
+            left: 0,
             minWidth: "260px",
-            padding: "16px 20px",
+            padding: "14px 18px",
             borderRadius: "12px",
             border: "1px solid var(--chart-tooltip-border-neon)",
             background: "var(--chart-tooltip-bg-neon)",
@@ -151,11 +150,11 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   return (
     <div
-      className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] shadow-[0 8px 32px rgba(0,0,0,0.2)] backdrop-blur-sm"
+      className="relative h-[360px] w-full overflow-visible rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] shadow-[0 8px 32px rgba(0,0,0,0.2)] backdrop-blur-sm"
       role="img"
       aria-label="天気予報の折れ線グラフ（時系列）"
     >
-      <div className="relative h-full w-full px-3 pt-2 pb-1">
+      <div className="relative h-full w-full overflow-hidden rounded-2xl px-3 pt-2 pb-1">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={flatData}
@@ -206,6 +205,18 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             <Tooltip
               content={renderTooltip}
               cursor={{ stroke: "rgba(34,211,238,0.4)", strokeWidth: 1 }}
+              wrapperStyle={{ outline: "none" }}
+              contentStyle={{
+                position: "absolute",
+                top: 4,
+                left: "50%",
+                transform: "translateX(-50%)",
+                margin: 0,
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                boxShadow: "none",
+              }}
             />
             <Legend
               wrapperStyle={{ fontSize: 13, fontWeight: 600 }}
@@ -224,17 +235,12 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             {seriesNames.map((name, i) => {
               const color = getSeriesColor(name, i);
               const gradientId = `area-grad-${i}`;
-              /** 48h: 1時間ごとの点（ピボット）をメイン。7d: 滑らか曲線＋小さめドット */
-              const dotConfig48h = {
-                r: 4,
+              /** ドット：シンプルで洗練（白縁・適度なサイズ）。48h はピボット用にやや大きめ */
+              const dotR = is48h ? 3.5 : 2.5;
+              const dotConfig = {
+                r: dotR,
                 fill: color,
-                stroke: "rgba(15,23,42,0.9)",
-                strokeWidth: 2,
-              };
-              const dotConfig7d = {
-                r: 2.5,
-                fill: color,
-                stroke: "#fff",
+                stroke: "rgba(255,255,255,0.95)",
                 strokeWidth: 1.5,
               };
               return (
@@ -257,11 +263,11 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                     stroke={color}
                     strokeWidth={is48h ? 1.2 : 2.2}
                     strokeDasharray={is48h ? "4 4" : undefined}
-                    dot={is48h ? dotConfig48h : dotConfig7d}
+                    dot={dotConfig}
                     activeDot={{
-                      r: is48h ? 5 : 4,
+                      r: is48h ? 4.5 : 3.5,
                       fill: color,
-                      stroke: "#fff",
+                      stroke: "rgba(255,255,255,1)",
                       strokeWidth: 2,
                     }}
                     connectNulls
