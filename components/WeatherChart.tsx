@@ -41,6 +41,12 @@ interface WeatherChartProps {
   seriesUnits?: SeriesUnits;
 }
 
+/** 降水量は0未満を表示しない（データ・表示の二重ガード） */
+function clampPrecipitationValue(v: number | null | undefined, key: string): number | undefined {
+  if (v == null) return undefined;
+  return key === "降水量" ? Math.max(0, Number(v)) : Number(v);
+}
+
 function flattenChartData(
   data: ChartDataPoint[]
 ): Record<string, string | number | undefined>[] {
@@ -53,7 +59,8 @@ function flattenChartData(
   return data.map((d) => {
     const row: Record<string, string | number | undefined> = { label: d.label };
     for (const k of keyList) {
-      row[k] = d.values[k] ?? undefined;
+      const v = d.values[k];
+      row[k] = v == null ? undefined : clampPrecipitationValue(v, k);
     }
     return row;
   });
@@ -107,7 +114,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
           className="chart-tooltip"
           style={{
             position: "absolute",
-            top: -4,
+            top: -28,
             left: cx,
             transform: "translate(-50%, 0)",
             minWidth: "200px",
@@ -127,12 +134,12 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             {label}
           </div>
           {payload.map((entry) => {
-            const u = getUnit(entry.name ?? "");
-            const val =
-              entry.value != null && typeof entry.value === "number"
-                ? `${entry.value} ${u}`
-                : "—";
-            const color = getSeriesColor(entry.name ?? "", seriesNames.indexOf(entry.name ?? ""));
+            const name = entry.name ?? "";
+            const u = getUnit(name);
+            const rawVal = entry.value != null && typeof entry.value === "number" ? entry.value : null;
+            const displayVal = rawVal != null ? (name === "降水量" ? Math.max(0, rawVal) : rawVal) : null;
+            const val = displayVal != null ? `${displayVal} ${u}` : "—";
+            const color = getSeriesColor(name, seriesNames.indexOf(name));
             return (
               <div
                 key={entry.name}
@@ -202,6 +209,11 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
               minTickGap={32}
             />
             <YAxis
+              domain={
+                seriesNames.length === 1 && seriesNames[0] === "降水量"
+                  ? [0, "auto"]
+                  : undefined
+              }
               tick={{ fontSize: 12, fill: "var(--chart-axis)", fontWeight: 500 }}
               tickLine={false}
               axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
