@@ -61,7 +61,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
   if (flatData.length === 0) {
     return (
       <div
-        className="flex h-[340px] items-center justify-center rounded-2xl border border-[var(--chart-grid)] bg-[var(--glass-bg)]/60 text-[var(--text-muted)] text-sm backdrop-blur-sm"
+        className="flex h-[360px] items-center justify-center rounded-2xl border border-[var(--glass-border)] bg-white/40 text-[var(--text-muted)] text-sm shadow-[var(--glass-shadow)] backdrop-blur-xl"
         role="status"
         aria-label="チャートデータなし"
       >
@@ -130,25 +130,31 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
   );
 
   return (
-    <div className="relative h-[340px] w-full" role="img" aria-label="天気予報の折れ線グラフ（時系列）">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={flatData}
-          margin={{ top: 60, right: 20, left: 8, bottom: 28 }}
-        >
-          <CartesianGrid strokeDasharray="4 4" stroke="var(--chart-grid)" vertical={false} />
+    <div
+      className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-white/40 shadow-[var(--glass-shadow)] backdrop-blur-xl"
+      role="img"
+      aria-label="天気予報の折れ線グラフ（時系列）"
+    >
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent pointer-events-none" aria-hidden />
+      <div className="relative h-full w-full px-3 pt-2 pb-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={flatData}
+            margin={{ top: 56, right: 16, left: 4, bottom: 24 }}
+          >
+            <CartesianGrid strokeDasharray="4 4" stroke="rgba(148,163,184,0.2)" vertical={false} />
           <XAxis
             dataKey="label"
             tick={{ fontSize: 13, fill: "var(--chart-axis)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
+            axisLine={{ stroke: "rgba(148,163,184,0.25)", strokeWidth: 1 }}
             interval="preserveStartEnd"
             minTickGap={36}
           />
           <YAxis
             tick={{ fontSize: 13, fill: "var(--chart-axis)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
+            axisLine={{ stroke: "rgba(148,163,184,0.25)", strokeWidth: 1 }}
             width={56}
             tickFormatter={(v) => {
               if (typeof v !== "number") return "";
@@ -209,6 +215,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
           })}
         </LineChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }
