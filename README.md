@@ -81,6 +81,7 @@ tamable/
 │   ├── globals.css         # 全体スタイル・CSS変数（看板/カード/チャート）
 │   ├── layout.tsx          # ルートレイアウト・メタデータ・フォント
 │   └── page.tsx            # メインページ（状態・API取得・チャート表示）
+├── middleware.ts           # Edge Middleware（Vercel 用 Basic 認証・環境変数で有効化）
 ├── components/             # UI コンポーネント
 │   ├── CitySelect.tsx     # 都市セレクト
 │   ├── ErrorMessage.tsx    # エラー表示・再試行ボタン
@@ -128,6 +129,24 @@ tamable/
 - **7 日間の体感温度**: API に daily の体感温度がないため、hourly の「日ごと先頭時刻」の値を 1 日 1 点として表示。日平均などは未実装。
 - **オフライン**: API はオンライン必須。オフライン時はエラー表示と再試行で対応。
 - **ビルド時のフォント**: `next build` で Google Fonts（Geist）を取得するため、ネットワークが必要。オフライン環境ではビルドが失敗する場合あり。
+
+---
+
+## Vercel での Basic 認証（無料）
+
+デモを限定公開したい場合、**Edge Middleware** で Basic 認証をかけられます（Vercel 無料プランで利用可能）。
+
+### 有効にする手順
+
+1. Vercel のプロジェクトで **Settings → Environment Variables** を開く。
+2. 次の 2 つを追加する：
+   - **Name**: `BASIC_AUTH_USER` / **Value**: ユーザー名（任意）
+   - **Name**: `BASIC_AUTH_PASSWORD` / **Value**: パスワード（任意）
+3. デプロイを再実行する（または次のデプロイから有効）。
+
+両方の環境変数が設定されているときだけ認証が有効になります。未設定（ローカル開発など）では認証せずそのまま表示されます。
+
+※ 本番・プレビューごとに別の値を設定することも可能です。
 
 ---
 
