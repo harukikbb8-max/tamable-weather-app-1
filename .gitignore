@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 面接用メモ（ローカルのみ、リポジトリに含めない）
+document/面接用コード説明メモ.md
