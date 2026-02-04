@@ -205,10 +205,28 @@ export default function Home() {
             {city.name} — {metricLabel}（{periodLabel}）
           </h2>
           {loading && <LoadingSpinner />}
-          {error && !loading && (
+          {!loading && error && (
             <ErrorMessage message={error} onRetry={load} />
           )}
-          {!loading && !error && raw && (
+          {!loading && !error && raw && chartDataConverted.length === 0 && (
+            <div
+              className="rounded-xl border border-[var(--card-border)] bg-[var(--accent-soft)] px-4 py-6 text-center shadow-[var(--card-shadow)]"
+              role="status"
+              aria-label="空状態"
+            >
+              <p className="text-sm text-[var(--text-muted)]">
+                表示できるデータがありません。指標や期間を変更してください。
+              </p>
+              <button
+                type="button"
+                onClick={load}
+                className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white shadow-[var(--card-shadow)] transition-colors hover:opacity-90"
+              >
+                再読み込み
+              </button>
+            </div>
+          )}
+          {!loading && !error && raw && chartDataConverted.length > 0 && (
             <WeatherChart
               data={chartDataConverted}
               period={period}
