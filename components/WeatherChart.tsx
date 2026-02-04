@@ -79,7 +79,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
   if (flatData.length === 0) {
     return (
       <div
-        className="flex h-[360px] items-center justify-center rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] text-[var(--chart-axis-neon)] text-sm backdrop-blur-sm"
+        className="flex h-[360px] items-center justify-center rounded-2xl border border-[var(--glass-border)] bg-white/40 text-[var(--text-muted)] text-sm shadow-[var(--glass-shadow)] backdrop-blur-xl"
         role="status"
         aria-label="チャートデータなし"
       >
@@ -90,7 +90,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   const singleUnit = seriesNames.length === 1 ? getUnit(seriesNames[0]) : null;
 
-  /** ツールチップ：大きく・常に上部固定で見切れない・カーソルと被らない */
+  /** ツールチップ：グラフを追わず右下固定で邪魔にならない */
   const renderTooltip = useCallback(
     (props: unknown) => {
       const { active, payload, label } = (props as { active?: boolean; payload?: readonly { name?: string; value?: number; color?: string }[]; label?: string });
@@ -102,21 +102,21 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             position: "relative",
             top: 0,
             left: 0,
-            minWidth: "260px",
-            padding: "14px 18px",
-            borderRadius: "12px",
-            border: "1px solid var(--chart-tooltip-border-neon)",
-            background: "var(--chart-tooltip-bg-neon)",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
-            backdropFilter: "blur(16px)",
-            fontSize: "15px",
-            color: "#e2e8f0",
+            minWidth: "200px",
+            padding: "10px 14px",
+            borderRadius: "10px",
+            border: "1px solid var(--chart-tooltip-border)",
+            background: "var(--chart-tooltip-bg)",
+            boxShadow: "var(--glass-shadow)",
+            backdropFilter: "blur(12px)",
+            fontSize: "13px",
+            color: "var(--text)",
             zIndex: 10,
             pointerEvents: "none",
           }}
         >
-          <div style={{ fontWeight: 700, marginBottom: 12, fontSize: "16px", color: "#f8fafc" }}>
-            日時: {label}
+          <div style={{ fontWeight: 600, marginBottom: 6, fontSize: "13px", color: "var(--text)" }}>
+            {label}
           </div>
           {payload.map((entry) => {
             const u = getUnit(entry.name ?? "");
@@ -130,13 +130,13 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  gap: 20,
-                  marginTop: 8,
-                  fontSize: "15px",
+                  gap: 12,
+                  marginTop: 4,
+                  fontSize: "12px",
                 }}
               >
-                <span style={{ color: "#94a3b8" }}>{entry.name}</span>
-                <span style={{ fontWeight: 700, color: entry.color ?? "#22d3ee" }}>
+                <span style={{ color: "var(--text-muted)" }}>{entry.name}</span>
+                <span style={{ fontWeight: 600, color: entry.color ?? "var(--accent)" }}>
                   {val}
                 </span>
               </div>
@@ -150,15 +150,16 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   return (
     <div
-      className="relative h-[360px] w-full overflow-visible rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] shadow-[0 8px 32px rgba(0,0,0,0.2)] backdrop-blur-sm"
+      className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-white/40 shadow-[var(--glass-shadow)] backdrop-blur-xl"
       role="img"
       aria-label="天気予報の折れ線グラフ（時系列）"
     >
-      <div className="relative h-full w-full overflow-hidden rounded-2xl px-3 pt-2 pb-1">
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent pointer-events-none" aria-hidden />
+      <div className="relative h-full w-full px-3 pt-2 pb-1">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={flatData}
-            margin={{ top: 64, right: 16, left: 4, bottom: 24 }}
+            margin={{ top: 52, right: 16, left: 4, bottom: 24 }}
           >
             <defs>
               {seriesNames.map((name, i) => {
@@ -172,7 +173,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor={color} stopOpacity={is48h ? 0 : 0.3} />
+                    <stop offset="0%" stopColor={color} stopOpacity={is48h ? 0 : 0.25} />
                     <stop offset="100%" stopColor={color} stopOpacity={0} />
                   </linearGradient>
                 );
@@ -180,21 +181,21 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             </defs>
             <CartesianGrid
               strokeDasharray="3 6"
-              stroke="var(--chart-grid-neon)"
+              stroke="var(--chart-grid)"
               vertical={false}
             />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 12, fill: "var(--chart-axis-neon)", fontWeight: 500 }}
+              tick={{ fontSize: 12, fill: "var(--chart-axis)", fontWeight: 500 }}
               tickLine={false}
-              axisLine={{ stroke: "var(--chart-grid-neon)", strokeWidth: 1 }}
+              axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
               interval="preserveStartEnd"
               minTickGap={32}
             />
             <YAxis
-              tick={{ fontSize: 12, fill: "var(--chart-axis-neon)", fontWeight: 500 }}
+              tick={{ fontSize: 12, fill: "var(--chart-axis)", fontWeight: 500 }}
               tickLine={false}
-              axisLine={{ stroke: "var(--chart-grid-neon)", strokeWidth: 1 }}
+              axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
               width={52}
               tickFormatter={(v) => {
                 if (typeof v !== "number") return "";
@@ -204,30 +205,28 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             />
             <Tooltip
               content={renderTooltip}
-              cursor={{ stroke: "rgba(34,211,238,0.4)", strokeWidth: 1 }}
-              wrapperStyle={{ outline: "none" }}
-              contentStyle={{
-                position: "absolute",
-                top: 4,
-                left: "50%",
-                transform: "translateX(-50%)",
-                margin: 0,
-                padding: 0,
-                border: "none",
-                background: "transparent",
-                boxShadow: "none",
+              cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1, strokeOpacity: 0.3 }}
+              wrapperStyle={{
+                position: "fixed",
+                right: 16,
+                bottom: 24,
+                left: "auto",
+                top: "auto",
+                transform: "none",
+                outline: "none",
               }}
+              contentStyle={{ margin: 0, padding: 0, border: "none", background: "transparent", boxShadow: "none" }}
             />
             <Legend
-              wrapperStyle={{ fontSize: 13, fontWeight: 600 }}
+              wrapperStyle={{ fontSize: 12, fontWeight: 600 }}
               iconType="circle"
               iconSize={8}
               formatter={(name) => {
                 const u = seriesUnits?.[name];
                 return (
-                  <span style={{ color: "var(--chart-axis-neon)", fontWeight: 600 }}>
+                  <span style={{ color: "var(--chart-axis)", fontWeight: 600 }}>
                     {name}
-                    {u ? <span style={{ fontWeight: 400, opacity: 0.9 }}> ({u})</span> : ""}
+                    {u ? <span style={{ fontWeight: 400, opacity: 0.85 }}> ({u})</span> : ""}
                   </span>
                 );
               }}
@@ -235,14 +234,11 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             {seriesNames.map((name, i) => {
               const color = getSeriesColor(name, i);
               const gradientId = `area-grad-${i}`;
-              /** ドット：シンプルで洗練（白縁・適度なサイズ）。48h はピボット用にやや大きめ */
-              const dotR = is48h ? 3.5 : 2.5;
-              const dotConfig = {
-                r: dotR,
-                fill: color,
-                stroke: "rgba(255,255,255,0.95)",
-                strokeWidth: 1.5,
-              };
+              /** ドット：前の丸スタイル（48h はやや大きめ・白縁） */
+              const dotConfig =
+                period === "48h"
+                  ? { r: 4, fill: color, stroke: "#fff", strokeWidth: 2 }
+                  : { r: 3, fill: color, stroke: "#fff", strokeWidth: 1.5 };
               return (
                 <React.Fragment key={name}>
                   {!is48h && (
@@ -265,9 +261,9 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                     strokeDasharray={is48h ? "4 4" : undefined}
                     dot={dotConfig}
                     activeDot={{
-                      r: is48h ? 4.5 : 3.5,
+                      r: is48h ? 5 : 4,
                       fill: color,
-                      stroke: "rgba(255,255,255,1)",
+                      stroke: "#fff",
                       strokeWidth: 2,
                     }}
                     connectNulls
