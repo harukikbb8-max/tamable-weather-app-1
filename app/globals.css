@@ -22,11 +22,22 @@
   --accent: #0c1222;
   --accent-soft: #f1f5f9;
   --focus-ring: rgba(12, 18, 34, 0.25);
-  /* チャート（ライト背景用） */
+  /* チャート（ライト背景用・通常カード内） */
   --chart-grid: #e2e8f0;
   --chart-axis: #64748b;
   --chart-tooltip-bg: #ffffff;
   --chart-tooltip-border: #e2e8f0;
+
+  /* チャートエリア：近未来ダークテーマ */
+  --chart-bg: #0f1419;
+  --chart-bg-panel: #151c24;
+  --chart-grid-neon: rgba(34, 211, 238, 0.12);
+  --chart-axis-neon: rgba(148, 163, 184, 0.9);
+  --chart-tooltip-bg-neon: rgba(15, 23, 34, 0.96);
+  --chart-tooltip-border-neon: rgba(34, 211, 238, 0.35);
+  --chart-tooltip-text: #e2e8f0;
+  --chart-tooltip-label: #94a3b8;
+  --chart-cursor-neon: rgba(34, 211, 238, 0.4);
 }
 
 @theme inline {
