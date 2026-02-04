@@ -1,43 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  /* 看板（ヘッダー） */
-  --signboard: #0c1222;
-  --signboard-text: #ffffff;
-  --signboard-text-subtle: #94a3b8;
-  --signboard-accent: #d4a012;
-  --signboard-accent-bright: #f0c14b;
-  --signboard-border: rgba(255, 255, 255, 0.08);
-  --signboard-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  /* 掲示板（メインエリア） */
-  --bg: #e8ecf1;
-  --bg-card: #ffffff;
-  --card-border: #d1d9e2;
-  --card-shadow: 0 2px 12px rgba(12, 18, 34, 0.08);
-  --card-shadow-hover: 0 4px 20px rgba(12, 18, 34, 0.12);
-  --text: #0c1222;
+  /* リキッドグラス（iPhone天気風） */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(255, 255, 255, 0.25);
+  --header-border: rgba(255, 255, 255, 0.4);
+  /* テキスト・アクセント */
+  --text: #1e293b;
   --text-muted: #475569;
   --text-subtle: #64748b;
-  --border: #e2e8f0;
-  --accent: #0c1222;
-  --accent-soft: #f1f5f9;
-  --focus-ring: rgba(12, 18, 34, 0.25);
-  /* チャート（ライト背景用・通常カード内） */
-  --chart-grid: #e2e8f0;
-  --chart-axis: #64748b;
-  --chart-tooltip-bg: #ffffff;
-  --chart-tooltip-border: #e2e8f0;
-
-  /* チャートエリア：近未来ダークテーマ */
-  --chart-bg: #0f1419;
-  --chart-bg-panel: #151c24;
-  --chart-grid-neon: rgba(34, 211, 238, 0.12);
-  --chart-axis-neon: rgba(148, 163, 184, 0.9);
-  --chart-tooltip-bg-neon: rgba(15, 23, 34, 0.96);
-  --chart-tooltip-border-neon: rgba(34, 211, 238, 0.35);
-  --chart-tooltip-text: #e2e8f0;
-  --chart-tooltip-label: #94a3b8;
-  --chart-cursor-neon: rgba(34, 211, 238, 0.4);
+  --border: rgba(148, 163, 184, 0.4);
+  --accent: #0ea5e9;
+  --accent-soft: rgba(255, 255, 255, 0.9);
+  --focus-ring: rgba(14, 165, 233, 0.3);
+  /* チャート（ガラス上で見やすい） */
+  --chart-grid: rgba(148, 163, 184, 0.25);
+  --chart-axis: #475569;
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-tooltip-border: rgba(148, 163, 184, 0.4);
 }
 
 @theme inline {
@@ -48,7 +31,8 @@
 }
 
 body {
-  background: var(--bg);
+  background: linear-gradient(180deg, #e0f2fe 0%, #f1f5f9 50%, #e2e8f0 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

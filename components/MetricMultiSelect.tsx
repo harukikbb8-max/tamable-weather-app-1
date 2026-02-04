@@ -28,7 +28,7 @@ export function MetricMultiSelect({
       <legend className="text-xs font-medium text-[var(--text-muted)]">
         指標
       </legend>
-      <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-2.5 rounded-lg border border-[var(--border)] bg-[var(--accent-soft)]/80 px-4 py-3">
+      <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-2.5 rounded-xl border border-[var(--glass-border)] bg-white/50 px-4 py-3 backdrop-blur-sm">
         {METRICS.map((m) => (
           <label
             key={m.id}

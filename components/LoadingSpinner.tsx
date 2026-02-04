@@ -3,7 +3,7 @@
 export function LoadingSpinner() {
   return (
     <div
-      className="flex h-[340px] flex-col items-center justify-center gap-4 rounded-xl border border-[var(--chart-grid)] bg-[var(--accent-soft)]/50"
+      className="flex h-[340px] flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--chart-grid)] bg-[var(--glass-bg)]/60 backdrop-blur-sm"
       role="status"
       aria-label="読み込み中"
     >

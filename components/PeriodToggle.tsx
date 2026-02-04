@@ -15,13 +15,13 @@ export function PeriodToggle({ value, onChange, disabled }: PeriodToggleProps) {
       <legend className="text-xs font-medium text-[var(--text-muted)]">
         期間
       </legend>
-      <div className="mt-1.5 flex rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] p-0.5">
+      <div className="mt-1.5 flex rounded-xl border border-[var(--glass-border)] bg-white/50 p-0.5 backdrop-blur-sm">
         {PERIOD_OPTIONS.map((opt) => (
           <label
             key={opt.value}
             className={`flex-1 cursor-pointer rounded px-4 py-2.5 text-center text-sm font-medium transition-colors ${
               value === opt.value
-                ? "bg-white text-[var(--accent)] shadow-[var(--card-shadow)]"
+                ? "bg-white text-[var(--accent)] shadow-[var(--glass-shadow)]"
                 : "text-[var(--text-muted)] hover:text-[var(--text)]"
             } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
           >

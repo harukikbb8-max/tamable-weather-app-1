@@ -59,8 +59,8 @@ export function UnitToggles({
           </span>
         )}
         <div
-          className={`mt-1.5 flex rounded-lg border border-[var(--border)] p-0.5 ${
-            tempDisabled ? "cursor-not-allowed bg-slate-100 opacity-60" : "bg-[var(--accent-soft)]"
+          className={`mt-1.5 flex rounded-lg border border-[var(--glass-border)] p-0.5 ${
+            tempDisabled ? "cursor-not-allowed bg-white/40 opacity-60" : "bg-white/50 backdrop-blur-sm"
           }`}
         >
           {TEMP_UNIT_OPTIONS.map((opt) => (
@@ -68,7 +68,7 @@ export function UnitToggles({
               key={opt.value}
               className={`flex-1 rounded px-3 py-2 text-center text-sm font-medium transition-colors ${
                 tempUnit === opt.value
-                  ? "bg-white text-[var(--accent)] shadow-[var(--card-shadow)]"
+                  ? "bg-white text-[var(--accent)] shadow-[var(--glass-shadow)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text)]"
               } ${tempDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
@@ -106,8 +106,8 @@ export function UnitToggles({
           </span>
         )}
         <div
-          className={`mt-1.5 flex rounded-lg border border-[var(--border)] p-0.5 ${
-            windDisabled ? "cursor-not-allowed bg-slate-100 opacity-60" : "bg-[var(--accent-soft)]"
+          className={`mt-1.5 flex rounded-lg border border-[var(--glass-border)] p-0.5 ${
+            windDisabled ? "cursor-not-allowed bg-white/40 opacity-60" : "bg-white/50 backdrop-blur-sm"
           }`}
         >
           {WIND_UNIT_OPTIONS.map((opt) => (
@@ -115,7 +115,7 @@ export function UnitToggles({
               key={opt.value}
               className={`flex-1 rounded px-3 py-2 text-center text-sm font-medium transition-colors ${
                 windUnit === opt.value
-                  ? "bg-white text-[var(--accent)] shadow-[var(--card-shadow)]"
+                  ? "bg-white text-[var(--accent)] shadow-[var(--glass-shadow)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text)]"
               } ${windDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
             >

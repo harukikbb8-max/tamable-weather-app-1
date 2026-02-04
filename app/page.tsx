@@ -137,32 +137,30 @@ export default function Home() {
       : `${safeMetricIds.length}指標`;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
-      {/* 看板風ヘッダー：枠・影で「貼られた看板」の雰囲気 */}
+    <div className="min-h-screen">
+      {/* リキッドグラス風ヘッダー（iPhone天気アプリ風） */}
       <header
-        className="relative border-b-[3px] border-[var(--signboard-accent)] bg-[var(--signboard)] text-[var(--signboard-text)] shadow-[var(--signboard-shadow)]"
+        className="relative border-b border-[var(--header-border)] bg-[var(--header-bg)] backdrop-blur-xl"
         role="banner"
       >
-        <div className="mx-auto max-w-3xl px-5 py-6 sm:px-8">
-          <div className="rounded border border-[var(--signboard-border)] bg-[var(--signboard)]/50 px-4 py-4 sm:px-5">
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--signboard-text)] sm:text-3xl">
-                天気時系列
-              </h1>
-              <span className="text-sm font-semibold uppercase tracking-wider text-[var(--signboard-accent-bright)]">
-                Weather Forecast
-              </span>
-            </div>
-            <p className="mt-2 text-sm text-[var(--signboard-text-subtle)]">
-              Open-Meteo 予報を現在日から表示
-            </p>
+        <div className="mx-auto max-w-3xl px-5 py-5 sm:px-8">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
+              天気時系列
+            </h1>
+            <span className="text-sm font-medium text-[var(--accent)]">
+              Weather Forecast
+            </span>
           </div>
+          <p className="mt-1.5 text-sm text-[var(--text-muted)]">
+            Open-Meteo 予報を現在日から表示
+          </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-5 py-8 sm:px-8">
         <section
-          className="rounded-xl border border-[var(--card-border)] bg-[var(--bg-card)] p-5 shadow-[var(--card-shadow)]"
+          className="rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-5 shadow-[var(--glass-shadow)] backdrop-blur-xl"
           aria-label="条件選択"
         >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -198,19 +196,22 @@ export default function Home() {
         </section>
 
         <section
-          className="mt-6 rounded-xl border border-[var(--card-border)] bg-[var(--bg-card)] p-5 shadow-[var(--card-shadow)]"
+          className="mt-6 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-5 shadow-[var(--glass-shadow)] backdrop-blur-xl"
           aria-label="チャート"
         >
-          <h2 className="mb-4 text-sm font-semibold text-[var(--text)]">
+          <h2 className="mb-1 text-sm font-semibold text-[var(--text)]">
             {city.name} — {metricLabel}（{periodLabel}）
           </h2>
+          <p className="mb-4 text-xs text-[var(--text-muted)]" aria-hidden>
+            折れ線グラフ（時系列）
+          </p>
           {loading && <LoadingSpinner />}
           {!loading && error && (
             <ErrorMessage message={error} onRetry={load} />
           )}
           {!loading && !error && raw && chartDataConverted.length === 0 && (
             <div
-              className="rounded-xl border border-[var(--card-border)] bg-[var(--accent-soft)] px-4 py-6 text-center shadow-[var(--card-shadow)]"
+              className="rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg-strong)] px-4 py-6 text-center backdrop-blur-sm"
               role="status"
               aria-label="空状態"
             >
@@ -220,7 +221,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={load}
-                className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white shadow-[var(--card-shadow)] transition-colors hover:opacity-90"
+                className="mt-3 inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white shadow-[var(--glass-shadow)] transition-colors hover:opacity-90"
               >
                 再読み込み
               </button>
@@ -235,7 +236,7 @@ export default function Home() {
           )}
         </section>
 
-        <footer className="mt-10 rounded-lg border border-[var(--card-border)] bg-[var(--bg-card)] px-4 py-4 text-center text-xs text-[var(--text-subtle)] shadow-[var(--card-shadow)]">
+        <footer className="mt-10 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-4 text-center text-xs text-[var(--text-subtle)] shadow-[var(--glass-shadow)] backdrop-blur-xl">
           <a
             href="https://open-meteo.com/"
             target="_blank"

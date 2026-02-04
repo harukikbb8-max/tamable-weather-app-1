@@ -61,7 +61,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
   if (flatData.length === 0) {
     return (
       <div
-        className="flex h-[340px] items-center justify-center rounded-xl border border-[var(--chart-grid)] bg-[var(--accent-soft)]/50 text-[var(--text-muted)] text-sm"
+        className="flex h-[340px] items-center justify-center rounded-2xl border border-[var(--chart-grid)] bg-[var(--glass-bg)]/60 text-[var(--text-muted)] text-sm backdrop-blur-sm"
         role="status"
         aria-label="チャートデータなし"
       >
@@ -89,7 +89,8 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             borderRadius: "10px",
             border: "1px solid var(--chart-tooltip-border)",
             background: "var(--chart-tooltip-bg)",
-            boxShadow: "var(--card-shadow-hover)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            backdropFilter: "blur(12px)",
             fontSize: "14px",
             color: "var(--text)",
             zIndex: 10,
@@ -129,26 +130,26 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
   );
 
   return (
-    <div className="relative h-[340px] w-full" role="img" aria-label="天気予報の折れ線グラフ">
+    <div className="relative h-[340px] w-full" role="img" aria-label="天気予報の折れ線グラフ（時系列）">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={flatData}
-          margin={{ top: 56, right: 16, left: 8, bottom: 24 }}
+          margin={{ top: 60, right: 20, left: 8, bottom: 28 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <CartesianGrid strokeDasharray="4 4" stroke="var(--chart-grid)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
+            tick={{ fontSize: 13, fill: "var(--chart-axis)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--chart-grid)" }}
+            axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
             interval="preserveStartEnd"
-            minTickGap={32}
+            minTickGap={36}
           />
           <YAxis
-            tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
+            tick={{ fontSize: 13, fill: "var(--chart-axis)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--chart-grid)" }}
-            width={52}
+            axisLine={{ stroke: "var(--chart-grid)", strokeWidth: 1 }}
+            width={56}
             tickFormatter={(v) => {
               if (typeof v !== "number") return "";
               const u = singleUnit ?? "";
@@ -157,16 +158,18 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
           />
           <Tooltip
             content={renderTooltip}
-            cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1, strokeOpacity: 0.35 }}
+            cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1.5, strokeOpacity: 0.4 }}
           />
           <Legend
-            wrapperStyle={{ fontSize: 13 }}
+            wrapperStyle={{ fontSize: 14, fontWeight: 600 }}
+            iconType="circle"
+            iconSize={10}
             formatter={(name) => {
               const u = seriesUnits?.[name];
               return (
-                <span style={{ color: "var(--chart-axis)" }}>
+                <span style={{ color: "var(--chart-axis)", fontWeight: 600 }}>
                   {name}
-                  {u ? ` (${u})` : ""}
+                  {u ? <span style={{ fontWeight: 400, opacity: 0.9 }}> ({u})</span> : ""}
                 </span>
               );
             }}
@@ -176,13 +179,13 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             const dotConfig =
               period === "48h"
                 ? {
-                    r: 2.5,
+                    r: 4.5,
                     fill: color,
                     stroke: "#fff",
-                    strokeWidth: 1.5,
+                    strokeWidth: 2,
                   }
                 : period === "7d"
-                  ? { r: 2, fill: color, stroke: "#fff", strokeWidth: 1 }
+                  ? { r: 4, fill: color, stroke: "#fff", strokeWidth: 2 }
                   : false;
             return (
               <Line
@@ -191,13 +194,13 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                 dataKey={name}
                 name={name}
                 stroke={color}
-                strokeWidth={2}
+                strokeWidth={2.5}
                 dot={dotConfig}
                 activeDot={{
-                  r: 4,
+                  r: 6,
                   fill: color,
                   stroke: "#fff",
-                  strokeWidth: 2,
+                  strokeWidth: 2.5,
                 }}
                 connectNulls
                 isAnimationActive={false}
