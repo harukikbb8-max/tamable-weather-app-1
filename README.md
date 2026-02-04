@@ -10,7 +10,7 @@
 |------|------|
 | リポジトリURL | https://github.com/harukikbb8-max/tamable-weather-app-1 |
 | README | 本ファイル（起動手順 / 技術選定理由 / ディレクトリ構成 / 工夫点 / 既知の制約） |
-| デモURL | 任意（Vercel 等。Basic 認証をかけることを推奨） |
+| デモURL | https://tamable-weather-app-1.vercel.app（公開時は Basic 認証推奨） |
 
 ---
 
