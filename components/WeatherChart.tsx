@@ -159,7 +159,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   return (
     <div
-      className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-white/40 shadow-[var(--glass-shadow)] backdrop-blur-xl"
+      className="relative h-[360px] w-full overflow-visible rounded-2xl border border-[var(--glass-border)] bg-white/40 shadow-[var(--glass-shadow)] backdrop-blur-xl"
       role="img"
       aria-label="天気予報の折れ線グラフ（時系列）"
     >
