@@ -90,18 +90,26 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   const singleUnit = seriesNames.length === 1 ? getUnit(seriesNames[0]) : null;
 
-  /** ツールチップ：グラフを追わず右下固定で邪魔にならない */
+  /** ツールチップ：グラフ上端に固定、横だけデータに合わせてちょこちょこ動く・凡例の手前に表示 */
   const renderTooltip = useCallback(
     (props: unknown) => {
-      const { active, payload, label } = (props as { active?: boolean; payload?: readonly { name?: string; value?: number; color?: string }[]; label?: string });
+      const p = props as {
+        active?: boolean;
+        payload?: readonly { name?: string; value?: number; color?: string }[];
+        label?: string;
+        coordinate?: { x?: number; y?: number };
+      };
+      const { active, payload, label, coordinate } = p;
       if (!active || !payload?.length) return null;
+      const cx = coordinate?.x ?? 0;
       return (
         <div
           className="chart-tooltip"
           style={{
-            position: "relative",
-            top: 0,
-            left: 0,
+            position: "absolute",
+            top: 8,
+            left: cx,
+            transform: "translate(-50%, 0)",
             minWidth: "200px",
             padding: "10px 14px",
             borderRadius: "10px",
@@ -111,7 +119,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             backdropFilter: "blur(12px)",
             fontSize: "13px",
             color: "var(--text)",
-            zIndex: 10,
+            zIndex: 100,
             pointerEvents: "none",
           }}
         >
@@ -124,6 +132,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
               entry.value != null && typeof entry.value === "number"
                 ? `${entry.value} ${u}`
                 : "—";
+            const color = getSeriesColor(entry.name ?? "", seriesNames.indexOf(entry.name ?? ""));
             return (
               <div
                 key={entry.name}
@@ -136,7 +145,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                 }}
               >
                 <span style={{ color: "var(--text-muted)" }}>{entry.name}</span>
-                <span style={{ fontWeight: 600, color: entry.color ?? "var(--accent)" }}>
+                <span style={{ fontWeight: 600, color: color ?? entry.color ?? "var(--accent)" }}>
                   {val}
                 </span>
               </div>
@@ -145,7 +154,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
         </div>
       );
     },
-    [getUnit]
+    [getUnit, seriesNames]
   );
 
   return (
@@ -206,30 +215,59 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             <Tooltip
               content={renderTooltip}
               cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1, strokeOpacity: 0.3 }}
-              wrapperStyle={{
-                position: "fixed",
-                right: 16,
-                bottom: 24,
-                left: "auto",
-                top: "auto",
-                transform: "none",
-                outline: "none",
-              }}
+              wrapperStyle={{ outline: "none", zIndex: 100 }}
               contentStyle={{ margin: 0, padding: 0, border: "none", background: "transparent", boxShadow: "none" }}
             />
             <Legend
-              wrapperStyle={{ fontSize: 12, fontWeight: 600 }}
-              iconType="circle"
-              iconSize={8}
-              formatter={(name) => {
-                const u = seriesUnits?.[name];
-                return (
-                  <span style={{ color: "var(--chart-axis)", fontWeight: 600 }}>
-                    {name}
-                    {u ? <span style={{ fontWeight: 400, opacity: 0.85 }}> ({u})</span> : ""}
-                  </span>
-                );
-              }}
+              content={() => (
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px 14px",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    zIndex: 5,
+                  }}
+                >
+                  {seriesNames.map((name, i) => {
+                    const color = getSeriesColor(name, i);
+                    const u = seriesUnits?.[name];
+                    return (
+                      <span
+                        key={name}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          color: "var(--text)",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            backgroundColor: color,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span style={{ fontWeight: 600 }}>
+                          {name}
+                          {u ? (
+                            <span style={{ fontWeight: 400, opacity: 0.85 }}> ({u})</span>
+                          ) : (
+                            ""
+                          )}
+                        </span>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              wrapperStyle={{ zIndex: 5 }}
             />
             {seriesNames.map((name, i) => {
               const color = getSeriesColor(name, i);
@@ -250,6 +288,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                       connectNulls
                       isAnimationActive={false}
                       hide
+                      legendType="none"
                     />
                   )}
                   <Line
