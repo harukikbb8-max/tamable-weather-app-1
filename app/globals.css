@@ -21,6 +21,13 @@
   --chart-axis: #475569;
   --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
   --chart-tooltip-border: rgba(148, 163, 184, 0.4);
+  /* チャート：近未来風（グラフエリア用） */
+  --chart-panel-bg: rgba(15, 23, 42, 0.88);
+  --chart-panel-border: rgba(148, 163, 184, 0.2);
+  --chart-grid-neon: rgba(148, 163, 184, 0.12);
+  --chart-axis-neon: rgba(203, 213, 225, 0.95);
+  --chart-tooltip-bg-neon: rgba(15, 23, 42, 0.96);
+  --chart-tooltip-border-neon: rgba(56, 189, 248, 0.35);
 }
 
 @theme inline {

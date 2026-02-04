@@ -14,8 +14,22 @@ import {
 import type { ChartDataPoint } from "@/lib/types";
 import React, { useMemo, useCallback } from "react";
 
-/** Apple / iOS 天気風：色相を離して被りを防ぐ（青・紫・緑・オレンジ） */
-const COLORS = ["#007AFF", "#AF52DE", "#34C759", "#FF9F0A"];
+/** グラフ用固定パレット（色相を離して被らない） */
+const FIXED_PALETTE = ["#22d3ee", "#e879f9", "#34d399", "#fbbf24", "#0ea5e9", "#38bdf8"] as const;
+
+/** 系列名 → 固定色（常に同じ指標は同じ色、被りなし） */
+const SERIES_COLOR_MAP: Record<string, string> = {
+  "気温": FIXED_PALETTE[0],
+  "体感温度": FIXED_PALETTE[1],
+  "降水量": FIXED_PALETTE[2],
+  "風速": FIXED_PALETTE[3],
+  "最高気温": FIXED_PALETTE[4],
+  "最低気温": FIXED_PALETTE[5],
+};
+
+function getSeriesColor(seriesName: string, index: number): string {
+  return SERIES_COLOR_MAP[seriesName] ?? FIXED_PALETTE[index % FIXED_PALETTE.length];
+}
 
 /** 系列名 → 表示単位（複数指標時は系列ごと） */
 export type SeriesUnits = Record<string, string>;
@@ -60,10 +74,12 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
     [seriesUnits, unit]
   );
 
+  const is48h = period === "48h";
+
   if (flatData.length === 0) {
     return (
       <div
-        className="flex h-[360px] items-center justify-center rounded-3xl border border-[var(--glass-border)] bg-white/30 text-[var(--text-muted)] text-sm shadow-[var(--glass-shadow)] backdrop-blur-xl"
+        className="flex h-[360px] items-center justify-center rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] text-[var(--chart-axis-neon)] text-sm backdrop-blur-sm"
         role="status"
         aria-label="チャートデータなし"
       >
@@ -74,6 +90,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   const singleUnit = seriesNames.length === 1 ? getUnit(seriesNames[0]) : null;
 
+  /** ツールチップ：大きく・上部固定でカーソルと被らない */
   const renderTooltip = useCallback(
     (props: unknown) => {
       const { active, payload, label } = (props as { active?: boolean; payload?: readonly { name?: string; value?: number; color?: string }[]; label?: string });
@@ -86,21 +103,21 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             top: 12,
             left: "50%",
             transform: "translateX(-50%)",
-            minWidth: "200px",
-            padding: "12px 16px",
-            borderRadius: "14px",
-            border: "1px solid var(--chart-tooltip-border)",
-            background: "var(--chart-tooltip-bg)",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
+            minWidth: "260px",
+            padding: "16px 20px",
+            borderRadius: "12px",
+            border: "1px solid var(--chart-tooltip-border-neon)",
+            background: "var(--chart-tooltip-bg-neon)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
             backdropFilter: "blur(16px)",
-            fontSize: "14px",
-            color: "var(--text)",
+            fontSize: "15px",
+            color: "#e2e8f0",
             zIndex: 10,
             pointerEvents: "none",
           }}
         >
-          <div style={{ fontWeight: 600, marginBottom: 8, color: "var(--text)" }}>
-            {label}
+          <div style={{ fontWeight: 700, marginBottom: 12, fontSize: "16px", color: "#f8fafc" }}>
+            日時: {label}
           </div>
           {payload.map((entry) => {
             const u = getUnit(entry.name ?? "");
@@ -114,12 +131,13 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  gap: 16,
-                  marginTop: 4,
+                  gap: 20,
+                  marginTop: 8,
+                  fontSize: "15px",
                 }}
               >
-                <span style={{ color: "var(--text-muted)" }}>{entry.name}</span>
-                <span style={{ fontWeight: 600, color: entry.color ?? "var(--accent)" }}>
+                <span style={{ color: "#94a3b8" }}>{entry.name}</span>
+                <span style={{ fontWeight: 700, color: entry.color ?? "#22d3ee" }}>
                   {val}
                 </span>
               </div>
@@ -133,54 +151,51 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
 
   return (
     <div
-      className="relative h-[360px] w-full overflow-hidden rounded-3xl border border-[var(--glass-border)] bg-white/35 shadow-[0 8px 32px rgba(0,0,0,0.06)] backdrop-blur-xl"
+      className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--chart-panel-border)] bg-[var(--chart-panel-bg)] shadow-[0 8px 32px rgba(0,0,0,0.2)] backdrop-blur-sm"
       role="img"
       aria-label="天気予報の折れ線グラフ（時系列）"
     >
-      {/* 淡いグラデーション＋ガラス感（iOS Weather 風） */}
-      <div
-        className="absolute inset-0 pointer-events-none rounded-3xl bg-gradient-to-b from-white/40 via-white/10 to-transparent"
-        aria-hidden
-      />
       <div className="relative h-full w-full px-3 pt-2 pb-1">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={flatData}
-            margin={{ top: 52, right: 16, left: 4, bottom: 24 }}
+            margin={{ top: 64, right: 16, left: 4, bottom: 24 }}
           >
             <defs>
-              {COLORS.map((color, i) => (
-                <linearGradient
-                  key={i}
-                  id={`area-grad-${i}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor={color} stopOpacity={0.35} />
-                  <stop offset="100%" stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              ))}
+              {seriesNames.map((name, i) => {
+                const color = getSeriesColor(name, i);
+                return (
+                  <linearGradient
+                    key={name}
+                    id={`area-grad-${i}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor={color} stopOpacity={is48h ? 0 : 0.3} />
+                    <stop offset="100%" stopColor={color} stopOpacity={0} />
+                  </linearGradient>
+                );
+              })}
             </defs>
-            {/* 補助線は極薄・最小限 */}
             <CartesianGrid
-              strokeDasharray="2 6"
-              stroke="rgba(148,163,184,0.12)"
+              strokeDasharray="3 6"
+              stroke="var(--chart-grid-neon)"
               vertical={false}
             />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 12, fill: "var(--chart-axis)", fontWeight: 500 }}
+              tick={{ fontSize: 12, fill: "var(--chart-axis-neon)", fontWeight: 500 }}
               tickLine={false}
-              axisLine={{ stroke: "rgba(148,163,184,0.18)", strokeWidth: 1 }}
+              axisLine={{ stroke: "var(--chart-grid-neon)", strokeWidth: 1 }}
               interval="preserveStartEnd"
               minTickGap={32}
             />
             <YAxis
-              tick={{ fontSize: 12, fill: "var(--chart-axis)", fontWeight: 500 }}
+              tick={{ fontSize: 12, fill: "var(--chart-axis-neon)", fontWeight: 500 }}
               tickLine={false}
-              axisLine={{ stroke: "rgba(148,163,184,0.18)", strokeWidth: 1 }}
+              axisLine={{ stroke: "var(--chart-grid-neon)", strokeWidth: 1 }}
               width={52}
               tickFormatter={(v) => {
                 if (typeof v !== "number") return "";
@@ -190,7 +205,7 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
             />
             <Tooltip
               content={renderTooltip}
-              cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1, strokeOpacity: 0.25 }}
+              cursor={{ stroke: "rgba(34,211,238,0.4)", strokeWidth: 1 }}
             />
             <Legend
               wrapperStyle={{ fontSize: 13, fontWeight: 600 }}
@@ -199,17 +214,24 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
               formatter={(name) => {
                 const u = seriesUnits?.[name];
                 return (
-                  <span style={{ color: "var(--chart-axis)", fontWeight: 600 }}>
+                  <span style={{ color: "var(--chart-axis-neon)", fontWeight: 600 }}>
                     {name}
-                    {u ? <span style={{ fontWeight: 400, opacity: 0.85 }}> ({u})</span> : ""}
+                    {u ? <span style={{ fontWeight: 400, opacity: 0.9 }}> ({u})</span> : ""}
                   </span>
                 );
               }}
             />
             {seriesNames.map((name, i) => {
-              const color = COLORS[i % COLORS.length];
-              const gradientId = `area-grad-${i % COLORS.length}`;
-              const dotConfig = {
+              const color = getSeriesColor(name, i);
+              const gradientId = `area-grad-${i}`;
+              /** 48h: 1時間ごとの点（ピボット）をメイン。7d: 滑らか曲線＋小さめドット */
+              const dotConfig48h = {
+                r: 4,
+                fill: color,
+                stroke: "rgba(15,23,42,0.9)",
+                strokeWidth: 2,
+              };
+              const dotConfig7d = {
                 r: 2.5,
                 fill: color,
                 stroke: "#fff",
@@ -217,24 +239,27 @@ export function WeatherChart({ data, period, unit = "", seriesUnits }: WeatherCh
               };
               return (
                 <React.Fragment key={name}>
-                  <Area
-                    type="monotone"
-                    dataKey={name}
-                    fill={`url(#${gradientId})`}
-                    stroke="none"
-                    connectNulls
-                    isAnimationActive={false}
-                    hide
-                  />
+                  {!is48h && (
+                    <Area
+                      type="monotone"
+                      dataKey={name}
+                      fill={`url(#${gradientId})`}
+                      stroke="none"
+                      connectNulls
+                      isAnimationActive={false}
+                      hide
+                    />
+                  )}
                   <Line
-                    type="natural"
+                    type={is48h ? "linear" : "natural"}
                     dataKey={name}
                     name={name}
                     stroke={color}
-                    strokeWidth={2.2}
-                    dot={dotConfig}
+                    strokeWidth={is48h ? 1.2 : 2.2}
+                    strokeDasharray={is48h ? "4 4" : undefined}
+                    dot={is48h ? dotConfig48h : dotConfig7d}
                     activeDot={{
-                      r: 4,
+                      r: is48h ? 5 : 4,
                       fill: color,
                       stroke: "#fff",
                       strokeWidth: 2,
